@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+/* Theme Variables */
+@theme {
+  --color-brand: #1e40af;
+  --color-brand-light: #3b82f6;
+  --color-brand-dark: #1e3a8a;
+}
+
+@layer components {
+  /* ----------------------------- */
+  /* 🔘 BUTTONS                    */
+  /* ----------------------------- */
+
+  .btn {
+    @apply inline-flex items-center justify-center font-medium transition-colors rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Variants */
+  .btn-primary {
+    @apply text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500;
+  }
+
+  .btn-secondary {
+    @apply text-gray-800 bg-gray-200 hover:bg-gray-300 focus:ring-gray-400;
+  }
+
+  .btn-danger {
+    @apply text-white bg-red-600 hover:bg-red-700 focus:ring-red-500;
+  }
+
+  .btn-ghost {
+    @apply text-gray-700 bg-transparent hover:bg-gray-100 focus:ring-gray-300;
+  }
+
+  /* Sizes */
+  .btn-sm {
+    @apply px-2 py-1 text-sm;
+  }
+
+  .btn-md {
+    @apply px-4 py-2 text-base;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  /* Full Width */
+  .btn-full {
+    @apply w-full;
+  }
+
+  /* ----------------------------- */
+  /* 📝 INPUTS                     */
+  /* ----------------------------- */
+
+  .input {
+    @apply w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed;
+  }
+
+  /* Input States */
+  .input-error {
+    @apply border-red-500 focus:ring-red-500;
+  }
+
+  .input-success {
+    @apply border-green-500 focus:ring-green-500;
+  }
+
+  /* Labels & Text */
+  .label {
+    @apply block mb-1 text-sm font-medium text-gray-700;
+  }
+
+  .helper-text {
+    @apply mt-1 text-xs text-gray-500;
+  }
+
+  .error-text {
+    @apply mt-1 text-xs text-red-600;
+  }
+}
