@@ -1,5 +1,6 @@
 import React from "react";
 import { useCartContext } from "../hooks/useCartContext";
+import { Link } from "react-router-dom";
 
 function Cart() {
   const {
@@ -53,7 +54,7 @@ function Cart() {
             </div>
             <button
               onClick={() => removeFromCart(item.id)}
-              className="px-4 py-2 text-white bg-red-600 rounded"
+              className="px-4 py-2 btn btn-danger btn-md"
             >
               Remove
             </button>
@@ -61,11 +62,17 @@ function Cart() {
         ))}
       </div>
 
-      <div className="mt-6 text-right">
+      <div className="flex items-center justify-end gap-4 mt-6 text-center">
         <h2 className="text-2xl font-bold">Total: ${totalPrice.toFixed(2)}</h2>
+        <Link
+          to="/checkout"
+          className="px-6 py-2 btn btn-primary btn-md"
+        >
+          Checkout
+        </Link>
         <button
           onClick={clearCart}
-          className="px-6 py-2 mt-3 text-white bg-gray-700 rounded"
+          className="px-6 py-2 btn btn-secondary btn-md"
         >
           Clear Cart
         </button>

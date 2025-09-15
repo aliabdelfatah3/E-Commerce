@@ -9,11 +9,12 @@ import Checkout from "./pages/Checkout";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
 import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import { Helmet } from "react-helmet-async";
 import { CartProvider } from "./context/CartProvider";
+import SignUp from "./pages/SignUp";
+import AuthProvider from "./context/AuthProvider";
 
 function App() {
   return (
@@ -26,31 +27,35 @@ function App() {
           content="Shop the latest fashion, and home essentials at Hexashop. Enjoy fast shipping, secure checkout, and exclusive deals."
         />
       </Helmet>
-      <CartProvider>
-        <Router>
-          <Routes>
-            {/* Main Routes */}
-            <Route element={<MainLayout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/products" element={<Products />} />
-              <Route
-                path="/products/category/:category"
-                element={<ProductCategory />}
-              />
-              <Route path="/products/:id" element={<ProductDetail />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-            </Route>
-            {/* Authentication Routes */}
-            <Route element={<AuthLayout />}>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-            </Route>
-          </Routes>
-        </Router>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <Router>
+            <Routes>
+              {/* Main Routes */}
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/products" element={<Products />} />
+                <Route
+                  path="/products/category/:category"
+                  element={<ProductCategory />}
+                />
+                <Route path="/products/:id" element={<ProductDetail />} />
+                <Route path="/cart" element={<Cart />} />
+
+                <Route path="/checkout" element={<Checkout />} />
+
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+              </Route>
+              {/* Authentication Routes */}
+              <Route element={<AuthLayout />}>
+                <Route path="/login" element={<Login />} />
+                <Route path="/sign-up" element={<SignUp />} />
+              </Route>
+            </Routes>
+          </Router>
+        </CartProvider>
+      </AuthProvider>
     </>
   );
 }

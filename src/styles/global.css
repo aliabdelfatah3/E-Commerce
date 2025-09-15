@@ -18,19 +18,27 @@
 
   /* Variants */
   .btn-primary {
-    @apply text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500;
+    @apply text-white bg-blue-600 hover:bg-blue-800 focus:ring-blue-500;
   }
 
   .btn-secondary {
-    @apply text-gray-800 bg-gray-200 hover:bg-gray-300 focus:ring-gray-400;
+    @apply text-gray-900 bg-gray-300 hover:bg-gray-400 focus:ring-gray-400;
   }
 
   .btn-danger {
-    @apply text-white bg-red-600 hover:bg-red-700 focus:ring-red-500;
+    @apply text-white bg-red-600 hover:bg-red-800 focus:ring-red-500;
   }
 
   .btn-ghost {
     @apply text-gray-700 bg-transparent hover:bg-gray-100 focus:ring-gray-300;
+  }
+  /* Auth Buttons */
+  .btn-signin {
+    @apply text-white transition-colors bg-blue-500 rounded hover:bg-blue-600 focus:ring-blue-400;
+  }
+
+  .btn-register {
+    @apply text-white transition-colors bg-green-500 rounded hover:bg-green-600 focus:ring-green-400;
   }
 
   /* Sizes */

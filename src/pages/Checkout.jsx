@@ -121,10 +121,7 @@ function Checkout() {
           />
         </div>
 
-        <button
-          type="submit"
-          className="px-6 py-2 mt-4 text-white bg-blue-600 rounded hover:bg-blue-700"
-        >
+        <button type="submit" className="px-6 py-2 mt-4 btn btn-primary btn-md">
           Place Order
         </button>
       </form>
