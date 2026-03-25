@@ -106,6 +106,14 @@ namespace ECommerce.API.Controllers
             }
         }
 
+        public class OrderItemRequest
+        {
+            public int ProductId { get; set; }
+            public int Quantity { get; set; }
+            public string Size { get; set; } = string.Empty;
+            public decimal Price { get; set; }
+        }
+
         public class OrderRequest
         {
             public string Name { get; set; } = string.Empty;
@@ -114,6 +122,7 @@ namespace ECommerce.API.Controllers
             public string City { get; set; } = string.Empty;
             public string ZipCode { get; set; } = string.Empty;
             public string Phone { get; set; } = string.Empty;
+            public List<OrderItemRequest> Items { get; set; } = new();
         }
 
         [HttpPost]
@@ -122,12 +131,50 @@ namespace ECommerce.API.Controllers
             try
             {
                 var userId = GetUserId();
-                var cartItems = await _context.CartItems
-                    .Include(c => c.Product)
-                    .Where(c => c.UserId == userId)
-                    .ToListAsync();
 
-                if (!cartItems.Any()) return BadRequest("Cart is empty");
+                // Support items passed directly in request body (preferred)
+                // OR fall back to server-side cart items for backward compatibility
+                List<OrderItem> orderItems;
+                decimal totalAmount;
+
+                if (request.Items != null && request.Items.Any())
+                {
+                    // Use items provided directly in request
+                    orderItems = request.Items.Select(i => new OrderItem
+                    {
+                        ProductId = i.ProductId,
+                        Size = i.Size,
+                        Quantity = i.Quantity,
+                        PriceAtPurchase = i.Price
+                    }).ToList();
+                    totalAmount = request.Items.Sum(i => i.Price * i.Quantity);
+
+                    // Also clear any server-side cart items for this user
+                    var serverCartItems = await _context.CartItems
+                        .Where(c => c.UserId == userId)
+                        .ToListAsync();
+                    _context.CartItems.RemoveRange(serverCartItems);
+                }
+                else
+                {
+                    // Fallback: use server-side cart
+                    var cartItems = await _context.CartItems
+                        .Include(c => c.Product)
+                        .Where(c => c.UserId == userId)
+                        .ToListAsync();
+
+                    if (!cartItems.Any()) return BadRequest(new { message = "Cart is empty. Please add items before checking out." });
+
+                    orderItems = cartItems.Select(c => new OrderItem
+                    {
+                        ProductId = c.ProductId,
+                        Size = c.Size,
+                        Quantity = c.Quantity,
+                        PriceAtPurchase = c.Product!.Price
+                    }).ToList();
+                    totalAmount = cartItems.Sum(c => c.Product!.Price * c.Quantity);
+                    _context.CartItems.RemoveRange(cartItems);
+                }
 
                 var order = new Order
                 {
@@ -138,18 +185,11 @@ namespace ECommerce.API.Controllers
                     City = request.City,
                     ZipCode = request.ZipCode,
                     Phone = request.Phone,
-                    TotalAmount = cartItems.Sum(c => c.Product!.Price * c.Quantity),
-                    Items = cartItems.Select(c => new OrderItem
-                    {
-                        ProductId = c.ProductId,
-                        Size = c.Size,
-                        Quantity = c.Quantity,
-                        PriceAtPurchase = c.Product!.Price
-                    }).ToList()
+                    TotalAmount = totalAmount,
+                    Items = orderItems
                 };
 
                 _context.Orders.Add(order);
-                _context.CartItems.RemoveRange(cartItems);
                 await _context.SaveChangesAsync();
 
                 return Ok(new

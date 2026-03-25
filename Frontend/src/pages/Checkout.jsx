@@ -71,7 +71,16 @@ function Checkout() {
     setIsSubmitting(true);
     
     try {
-        await orderAPI.createOrder(formData);
+        await orderAPI.createOrder({
+            ...formData,
+            items: items.map(item => ({
+                productId: item.id,
+                quantity: item.quantity,
+                size: item.size || "",
+                price: item.price,
+            }))
+        });
+
         clearCart();
         setOrderPlaced(true);
         toast.success("Order placed successfully! 🎉");
