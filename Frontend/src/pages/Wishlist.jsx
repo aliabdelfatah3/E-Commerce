@@ -1,10 +1,9 @@
-import React, { useContext } from "react";
-import { WishlistContext } from "../context/WishlistProvider";
+import { useWishlistStore } from "../store/wishlistStore";
 import { Link } from "react-router-dom";
 import { FiHeart, FiShoppingBag, FiTrash2 } from "react-icons/fi";
 
 function Wishlist() {
-  const { wishlist, toggleWishlist, clearWishlist } = useContext(WishlistContext);
+  const { wishlist, toggleWishlist, clearWishlist } = useWishlistStore();
 
   if (wishlist.length === 0) {
     return (

@@ -1,12 +1,12 @@
-import React, { memo, useContext } from "react";
+import React, { memo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiShoppingBag, FiStar, FiHeart } from "react-icons/fi";
-import { WishlistContext } from "../../context/WishlistProvider";
+import { useWishlistStore } from "../../store/wishlistStore";
 
 // Memoized: only re-renders when the product prop actually changes
 const ProductCard = memo(function ProductCard({ product }) {
   const navigate = useNavigate();
-  const { toggleWishlist, isWishlisted } = useContext(WishlistContext);
+  const { toggleWishlist, isWishlisted } = useWishlistStore();
   const wishlisted = isWishlisted(product.id);
 
   const isNew  = product.id % 3 === 0;

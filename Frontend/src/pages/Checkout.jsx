@@ -1,14 +1,14 @@
-import React, { useState, useContext, useEffect } from "react";
-import { useCartContext } from "../hooks/useCartContext";
-import { AuthContext } from "../context/AuthContext";
+import React, { useState, useEffect } from "react";
+import { useAuthStore } from "../store/authStore";
+import { useCartStore } from "../store/cartStore";
 import { useNavigate, Link } from "react-router-dom";
 import { FiCheckCircle, FiShield, FiLock, FiChevronLeft } from "react-icons/fi";
 import { orderAPI } from "../services/api";
 import toast from "react-hot-toast";
 
 function Checkout() {
-  const { items, clearCart } = useCartContext();
-  const { user } = useContext(AuthContext);
+  const { items, clearCart } = useCartStore();
+  const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: user?.name || "",

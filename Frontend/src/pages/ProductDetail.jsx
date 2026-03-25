@@ -1,17 +1,17 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getProduct, getProductsByCategory } from "../services/productService";
-import { useCartContext } from "../hooks/useCartContext";
-import { WishlistContext } from "../context/WishlistProvider";
+import { useCartStore } from "../store/cartStore";
+import { useWishlistStore } from "../store/wishlistStore";
 import { FiShoppingBag, FiTruck, FiShield, FiArrowLeft, FiHeart, FiMinus, FiPlus } from "react-icons/fi";
 import toast from "react-hot-toast";
 import ProductGrid from "../components/product/ProductGrid";
 
 function ProductDetail() {
   const { id } = useParams();
-  const { addToCart } = useCartContext();
-  const { toggleWishlist, isWishlisted } = useContext(WishlistContext);
+  const addToCart = useCartStore((state) => state.addToCart);
+  const { toggleWishlist, isWishlisted } = useWishlistStore();
   const [adding, setAdding] = useState(false);
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);

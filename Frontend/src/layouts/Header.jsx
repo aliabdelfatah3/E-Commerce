@@ -1,16 +1,16 @@
+import { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { MdArrowDropDown } from "react-icons/md";
 import { FiShoppingCart, FiMenu, FiX, FiSearch, FiHeart } from "react-icons/fi";
-import { useCartContext } from "../hooks/useCartContext";
-import { useContext, useState, useEffect, useRef } from "react";
-import { AuthContext } from "../context/AuthContext";
-import { WishlistContext } from "../context/WishlistProvider";
+import { useCartStore } from "../store/cartStore";
+import { useAuthStore } from "../store/authStore";
+import { useWishlistStore } from "../store/wishlistStore";
 
 function Header() {
-  const { items } = useCartContext();
-  const { user, logout } = useContext(AuthContext);
-  const { wishlist } = useContext(WishlistContext);
+  const items = useCartStore((state) => state.items);
+  const { user, logout } = useAuthStore();
+  const wishlist = useWishlistStore((state) => state.wishlist);
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);

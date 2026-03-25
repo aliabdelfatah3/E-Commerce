@@ -1,5 +1,5 @@
 import React from "react";
-import { useCartContext } from "../hooks/useCartContext";
+import { useCartStore } from "../store/cartStore";
 import { Link } from "react-router-dom";
 import { FiShoppingBag, FiTrash2, FiMinus, FiPlus, FiArrowRight } from "react-icons/fi";
 
@@ -10,7 +10,7 @@ function Cart() {
     increaseQuantity,
     decreaseQuantity,
     clearCart,
-  } = useCartContext();
+  } = useCartStore();
 
   const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
   const shipping = subtotal > 150 ? 0 : 15.00;

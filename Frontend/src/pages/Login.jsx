@@ -1,14 +1,16 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { authAPI } from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { useAuthStore } from "../store/authStore";
+import { useCartStore } from "../store/cartStore";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useContext(AuthContext);
+  const login = useAuthStore((state) => state.login);
+  const syncCart = useCartStore((state) => state.syncCart);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -19,6 +21,7 @@ function Login() {
     try {
       const { data } = await authAPI.login({ email, password });
       login(data.user, data.token);
+      await syncCart();
       navigate("/");
     } catch (err) {
       setError(err.response?.data || "Invalid email or password");

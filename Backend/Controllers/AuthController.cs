@@ -112,7 +112,8 @@ namespace ECommerce.API.Controllers
             if (user != null)
             {
                 var token = GenerateResetToken(user);
-                var resetLink = $"http://localhost:5173/reset-password?token={token}";
+                var frontendUrl = _configuration["FrontendUrl"] ?? "http://localhost:5173";
+                var resetLink = $"{frontendUrl.TrimEnd('/')}/reset-password?token={token}";
 
                 var emailSettings = _configuration.GetSection("EmailSettings");
                 var senderEmail = emailSettings["SenderEmail"];

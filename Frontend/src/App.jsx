@@ -1,9 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { CartProvider } from "./context/CartProvider";
-import AuthProvider from "./context/AuthProvider";
-import { WishlistProvider } from "./context/WishlistProvider";
 import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
 
@@ -43,41 +40,35 @@ function App() {
           content="Shop the latest fashion and home essentials at Hexashop. Enjoy fast shipping, secure checkout, and exclusive deals."
         />
       </Helmet>
-      <AuthProvider>
-        <WishlistProvider>
-          <CartProvider>
-            <Router>
-              <ScrollToTop />
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  {/* Main Routes */}
-                  <Route element={<MainLayout />}>
-                    <Route path="/"                            element={<Home />} />
-                    <Route path="/products"                    element={<Products />} />
-                    <Route path="/products/category/:category" element={<ProductCategory />} />
-                    <Route path="/products/:id"                element={<ProductDetail />} />
-                    <Route path="/cart"                        element={<Cart />} />
-                    <Route path="/orders"                      element={<Orders />} />
-                    <Route path="/checkout"                    element={<Checkout />} />
-                    <Route path="/wishlist"                    element={<Wishlist />} />
-                    <Route path="/about"                       element={<About />} />
-                    <Route path="/contact"                     element={<Contact />} />
-                  </Route>
-                  {/* Auth Routes */}
-                  <Route element={<AuthLayout />}>
-                    <Route path="/login"           element={<Login />} />
-                    <Route path="/sign-up"         element={<SignUp />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/reset-password"  element={<ResetPassword />} />
-                  </Route>
-                  {/* 404 Catch-all */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </Router>
-          </CartProvider>
-        </WishlistProvider>
-      </AuthProvider>
+      <Router>
+        <ScrollToTop />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            {/* Main Routes */}
+            <Route element={<MainLayout />}>
+              <Route path="/"                            element={<Home />} />
+              <Route path="/products"                    element={<Products />} />
+              <Route path="/products/category/:category" element={<ProductCategory />} />
+              <Route path="/products/:id"                element={<ProductDetail />} />
+              <Route path="/cart"                        element={<Cart />} />
+              <Route path="/orders"                      element={<Orders />} />
+              <Route path="/checkout"                    element={<Checkout />} />
+              <Route path="/wishlist"                    element={<Wishlist />} />
+              <Route path="/about"                       element={<About />} />
+              <Route path="/contact"                     element={<Contact />} />
+            </Route>
+            {/* Auth Routes */}
+            <Route element={<AuthLayout />}>
+              <Route path="/login"           element={<Login />} />
+              <Route path="/sign-up"         element={<SignUp />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password"  element={<ResetPassword />} />
+            </Route>
+            {/* 404 Catch-all */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </Router>
     </>
   );
 }
