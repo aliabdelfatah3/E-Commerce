@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import logo2 from "../assets/logo2.png";
+import logo2 from "../assets/Logo2.png";
 import { FiFacebook, FiTwitter, FiInstagram, FiLinkedin } from "react-icons/fi";
 import toast from "react-hot-toast";
 
