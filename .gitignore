@@ -7,18 +7,29 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
-dist
-dist-ssr
+/dist
+/dist-ssr
 *.local
+.env
+.env.*
+!.env.example
+
+# .NET / C#
+[Bb]in/
+[Oo]bj/
+out/
+appsettings.Development.json
+*.user
+*.userosscache
+*.sln.doccache
+*.suo
+*.userprefs
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
 *.sw?

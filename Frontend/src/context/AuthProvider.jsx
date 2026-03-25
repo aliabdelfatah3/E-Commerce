@@ -6,22 +6,23 @@ export default function AuthProvider({ children }) {
     () => JSON.parse(localStorage.getItem("user")) || null
   );
 
-  const login = (email, password) => {
-    // logic to validate with API if needed
-    const newUser = { email };
-    setUser(newUser);
-    localStorage.setItem("user", JSON.stringify(newUser));
+  const login = (userData, token) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+    if (token) localStorage.setItem("auth_token", token);
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("auth_token");
   };
 
   useEffect(() => {
     // Sync if localStorage changes elsewhere
     const stored = localStorage.getItem("user");
     if (stored && !user) setUser(JSON.parse(stored));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

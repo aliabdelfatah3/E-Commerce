@@ -89,3 +89,28 @@
     @apply mt-1 text-xs text-red-600;
   }
 }
+
+/* Skeleton shimmer animation */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Order success checkmark animation */
+@keyframes scale-in {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.scale-in-center {
+  animation: scale-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Page transition animation */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-page {
+  animation: fade-in-up 0.5s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+}
+

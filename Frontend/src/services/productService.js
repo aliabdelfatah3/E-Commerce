@@ -1,8 +1,20 @@
 import api from "./api";
 
-export const getProducts = async () => {
-  const res = await api.get("/products");
-  return res.data.products;
+const buildParams = (page, limit, filters) => {
+  const params = new URLSearchParams({ page, limit });
+  if (filters) {
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+         params.append(key, value);
+      }
+    });
+  }
+  return params.toString();
+}
+
+export const getProducts = async (page = 1, limit = 12, filters = {}) => {
+  const res = await api.get(`/products?${buildParams(page, limit, filters)}`);
+  return res.data;
 };
 
 export const getProduct = async (id) => {
@@ -10,7 +22,7 @@ export const getProduct = async (id) => {
   return res.data;
 };
 
-export const getProductsByCategory = async (category) => {
-  const res = await api.get(`/products/category/${category}`);
-  return res.data.products;
+export const getProductsByCategory = async (category, page = 1, limit = 12, filters = {}) => {
+  const res = await api.get(`/products/category/${category}?${buildParams(page, limit, filters)}`);
+  return res.data;
 };

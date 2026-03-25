@@ -1,0 +1,25 @@
+## .NET Core
+obj/
+bin/
+
+# SQLite database files (never commit DB data)
+*.db
+*.db-shm
+*.db-wal
+
+# User-specific secrets — use environment variables in production
+appsettings.Production.json
+appsettings.Development.json
+
+# Logs
+*.log
+
+# VS / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# OS
+.DS_Store
+Thumbs.db
