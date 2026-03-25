@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Net.Mail;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
 using System.Security.Claims;
 using System.Text;
 
@@ -123,19 +124,14 @@ namespace ECommerce.API.Controllers
                 {
                     try
                     {
-                        using var client = new SmtpClient(emailSettings["SmtpServer"], int.Parse(emailSettings["Port"]!))
-                        {
-                            EnableSsl = true,
-                            UseDefaultCredentials = false,
-                            Credentials = new NetworkCredential(senderEmail, appPassword)
-                        };
+                        var message = new MimeMessage();
+                        message.From.Add(new MailboxAddress(emailSettings["SenderName"], senderEmail));
+                        message.To.Add(new MailboxAddress(user.Name, cleanEmail));
+                        message.Subject = "Hexashop - Secure Password Reset";
 
-                        var mailMessage = new MailMessage
+                        var bodyBuilder = new BodyBuilder
                         {
-                            From = new MailAddress(senderEmail, emailSettings["SenderName"]),
-                            Subject = "Hexashop - Secure Password Reset",
-                            IsBodyHtml = true,
-                            Body = $@"
+                            HtmlBody = $@"
                                 <h2>Password Reset Request</h2>
                                 <p>Hi {user.Name},</p>
                                 <p>You recently requested to reset your password. Click the secure link below to proceed:</p>
@@ -144,14 +140,20 @@ namespace ECommerce.API.Controllers
                                 <p>If you did not request a password reset, please ignore this email.</p>
                             "
                         };
-                        mailMessage.To.Add(cleanEmail);
+                        message.Body = bodyBuilder.ToMessageBody();
 
-                        await client.SendMailAsync(mailMessage);
+                        using var client = new SmtpClient();
+                        // For Gmail, use port 587 with STARTTLS (SecureSocketOptions.StartTls) or 465 with SSL/TLS (SecureSocketOptions.SslOnConnect)
+                        await client.ConnectAsync(emailSettings["SmtpServer"], int.Parse(emailSettings["Port"]!), SecureSocketOptions.StartTls);
+                        await client.AuthenticateAsync(senderEmail, appPassword);
+                        await client.SendAsync(message);
+                        await client.DisconnectAsync(true);
+
                         Console.WriteLine($"[SMTP SUCCESS] Secure reset email dispatched to {cleanEmail}");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[SMTP ERROR] Could not send email: {ex.Message}");
+                        Console.WriteLine($"[SMTP ERROR] Could not send email via MailKit: {ex.Message}");
                     }
                 }
                 else
