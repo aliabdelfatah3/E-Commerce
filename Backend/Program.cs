@@ -22,15 +22,25 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Configure CORS — origins come from appsettings.json "CorsOrigins" array
-var corsOrigins = builder.Configuration.GetSection("CorsOrigins").Get<string[]>()
-    ?? new[] { "http://localhost:5173" };
+// Configure CORS
+var corsOrigins = builder.Configuration.GetSection("CorsOrigins").Get<string[]>();
+var envOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS");
+
+var allOrigins = new List<string>();
+if (corsOrigins != null) allOrigins.AddRange(corsOrigins);
+if (!string.IsNullOrEmpty(envOrigins))
+{
+    allOrigins.AddRange(envOrigins.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(o => o.Trim()));
+}
+
+// Fallback for development if nothing is configured
+if (allOrigins.Count == 0) allOrigins.Add("http://localhost:5173");
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy",
         policy => policy
-            .WithOrigins(corsOrigins)
+            .WithOrigins(allOrigins.ToArray())
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials());
