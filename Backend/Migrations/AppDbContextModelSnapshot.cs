@@ -45,6 +45,12 @@ namespace ECommerce.API.Migrations
                     b.ToTable("CartItems");
                 });
 
+            modelBuilder.Entity("ECommerce.API.Models.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("TEXT");
