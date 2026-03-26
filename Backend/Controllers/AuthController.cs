@@ -143,8 +143,11 @@ namespace ECommerce.API.Controllers
                         message.Body = bodyBuilder.ToMessageBody();
 
                         using var client = new SmtpClient();
-                        // For Gmail, use port 587 with STARTTLS (SecureSocketOptions.StartTls) or 465 with SSL/TLS (SecureSocketOptions.SslOnConnect)
-                        await client.ConnectAsync(emailSettings["SmtpServer"], int.Parse(emailSettings["Port"]!), SecureSocketOptions.StartTls);
+                        var port = int.Parse(emailSettings["Port"]!);
+                        // Port 465 uses implicit SSL (SslOnConnect), while 587 uses STARTTLS (StartTls)
+                        var secureOption = port == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
+
+                        await client.ConnectAsync(emailSettings["SmtpServer"], port, secureOption);
                         await client.AuthenticateAsync(senderEmail, appPassword);
                         await client.SendAsync(message);
                         await client.DisconnectAsync(true);
