@@ -6,9 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using MimeKit;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using System.Security.Claims;
 using System.Text;
 
@@ -124,39 +123,48 @@ namespace ECommerce.API.Controllers
                 {
                     try
                     {
-                        var message = new MimeMessage();
-                        message.From.Add(new MailboxAddress(emailSettings["SenderName"], senderEmail));
-                        message.To.Add(new MailboxAddress(user.Name, cleanEmail));
-                        message.Subject = "Hexashop - Secure Password Reset";
-
-                        var bodyBuilder = new BodyBuilder
+                        var apiKey = _configuration["SendGrid:ApiKey"];
+                        if (string.IsNullOrEmpty(apiKey) || apiKey.Contains("YOUR_SENDGRID_API_KEY"))
                         {
-                            HtmlBody = $@"
+                            // Fallback to Console if no API Key provided
+                            Console.WriteLine("\n=======================================================");
+                            Console.WriteLine("[ATTENTION] SendGrid API Key not configured.");
+                            Console.WriteLine($"[MOCK EMAIL SENT TO {cleanEmail}] ");
+                            Console.WriteLine($"[RESET LINK]: {resetLink}");
+                            Console.WriteLine("=======================================================\n");
+                        }
+                        else
+                        {
+                            var client = new SendGridClient(apiKey);
+                            var from = new EmailAddress(senderEmail, emailSettings["SenderName"]);
+                            var to = new EmailAddress(cleanEmail, user.Name);
+                            var subject = "Hexashop - Secure Password Reset";
+                            var plainTextContent = $"Hi {user.Name}, Reset your password here: {resetLink}";
+                            var htmlContent = $@"
                                 <h2>Password Reset Request</h2>
                                 <p>Hi {user.Name},</p>
                                 <p>You recently requested to reset your password. Click the secure link below to proceed:</p>
                                 <p><br><a href='{resetLink}' style='display:inline-block;padding:12px 24px;background-color:#F63232;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;'>Reset Password</a><br><br></p>
                                 <p>This secure link will expire in exactly 15 minutes.</p>
                                 <p>If you did not request a password reset, please ignore this email.</p>
-                            "
-                        };
-                        message.Body = bodyBuilder.ToMessageBody();
+                            ";
+                            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+                            var response = await client.SendEmailAsync(msg);
 
-                        using var client = new SmtpClient();
-                        var port = int.Parse(emailSettings["Port"]!);
-                        // Port 465 uses implicit SSL (SslOnConnect), while 587 uses STARTTLS (StartTls)
-                        var secureOption = port == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
-
-                        await client.ConnectAsync(emailSettings["SmtpServer"], port, secureOption);
-                        await client.AuthenticateAsync(senderEmail, appPassword);
-                        await client.SendAsync(message);
-                        await client.DisconnectAsync(true);
-
-                        Console.WriteLine($"[SMTP SUCCESS] Secure reset email dispatched to {cleanEmail}");
+                            if (response.IsSuccessStatusCode)
+                            {
+                                Console.WriteLine($"[SENDGRID SUCCESS] Secure reset email dispatched to {cleanEmail}");
+                            }
+                            else
+                            {
+                                var errorBody = await response.Body.ReadAsStringAsync();
+                                Console.WriteLine($"[SENDGRID ERROR] Status: {response.StatusCode}, Error: {errorBody}");
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[SMTP ERROR] Could not send email via MailKit: {ex.Message}");
+                        Console.WriteLine($"[SENDGRID EXCEPTION] Could not send email: {ex.Message}");
                     }
                 }
                 else
